@@ -3,58 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <title>แผ่นจุ่มกำลังใจ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Tahoma', sans-serif; text-align: center; background: #fef9e7; }
-    h1 { color: #e67e22; }
+    body { 
+      font-family: 'Itim', cursive; 
+      text-align: center; 
+      background: #fffafc; 
+      margin: 0; 
+      padding: 20px;
+    }
+    h1 { 
+      color: #ff6f91; 
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
     #basket { margin: 20px; }
-    .card { display: inline-block; width: 100px; height: 60px; background: #d35400; 
-            color: white; border-radius: 10px; line-height: 60px; cursor: pointer; margin: 10px; }
-    #scratch-container { position: relative; width: 320px; margin: 20px auto; }
+    .card { 
+      display: inline-block; 
+      width: 120px; height: 80px; 
+      background: #ffe4ec; 
+      border: 2px dashed #ff6f91; 
+      border-radius: 12px; 
+      margin: 10px; 
+      line-height: 80px; 
+      cursor: pointer; 
+      font-size: 18px; 
+      color: #ff6f91;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.1);
+      background: #ffd1e8;
+    }
+    #scratch-container { 
+      position: relative; 
+      width: 320px; 
+      margin: 20px auto; 
+      display: none;
+    }
     #hidden-message { 
-      width: 320px; height: 160px; border-radius: 10px; background: #f1c40f; 
-      display: flex; justify-content: center; align-items: center; 
-      font-size: 20px; font-weight: bold; color: #2c3e50;
+      width: 320px; height: 160px; 
+      border-radius: 12px; 
+      background: #fff0f5; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      font-size: 22px; 
+      font-weight: bold; 
+      color: #e75480; 
+      border: 3px solid #ff6f91;
     }
     #scratchCanvas {
       position: absolute; top: 0; left: 0;
-      border-radius: 10px;
+      border-radius: 12px;
     }
   </style>
 </head>
 <body>
-  <h1>แผ่นจุ่มกำลังใจ 🎴</h1>
+  <h1>🎀 แผ่นจุ่มกำลังใจ 🎀</h1>
+  <p>เลือกการ์ดที่ชอบ แล้วขูดเพื่อดูข้อความกำลังใจ 💌</p>
   <div id="basket"></div>
 
-  <div id="scratch-container" style="display:none;">
+  <div id="scratch-container">
     <div id="hidden-message">✨ กำลังใจ ✨</div>
     <canvas id="scratchCanvas" width="320" height="160"></canvas>
   </div>
 
 <script>
 const MESSAGES = [
-  "วันนี้ก็เก่งมากแล้ว ✨",
-  "สู้ ๆ นะ! 💪",
-  "เธอทำได้แน่นอน 🌟",
-  "พักบ้างก็ได้นะ 💤",
-  "เราภูมิใจในตัวเธอ ❤️"
+  "วันนี้ก็เก่งมากแล้วนะ ✨",
+  "สู้ ๆ นะ! เธอทำได้ 💪",
+  "พักบ้างก็ไม่เป็นไรนะ 💤",
+  "เราภูมิใจในตัวเธอมาก ❤️",
+  "อนาคตสดใสรออยู่แน่นอน 🌈",
+  "ยิ้มไว้ เธอสวยที่สุดแล้ว 😊"
 ];
-const CARD_COUNT = 5; 
+const CARD_COUNT = 5;
+const REVEAL_THRESHOLD = 0.6; // 60%
 
 // สร้างการ์ดเลือก
 const basket = document.getElementById("basket");
 for(let i=0;i<CARD_COUNT;i++){
   let div=document.createElement("div");
   div.className="card";
-  div.innerText="หยิบแผ่น "+(i+1);
+  div.innerText="การ์ด "+(i+1);
   div.onclick=()=>startScratch();
   basket.appendChild(div);
 }
 
 function startScratch(){
-  // เลือกข้อความสุ่ม
   const msg = MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
   document.getElementById("hidden-message").innerText = msg;
-
   document.getElementById("scratch-container").style.display="block";
   initScratch();
 }
@@ -63,8 +102,9 @@ function initScratch(){
   const canvas = document.getElementById("scratchCanvas");
   const ctx = canvas.getContext("2d");
 
-  // ระบายพื้นทับ (สีเทา)
-  ctx.fillStyle = "#7f8c8d";
+  // ระบายสีเทา
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "#c0c0c0";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
   let isDrawing=false;
@@ -83,6 +123,7 @@ function initScratch(){
     ctx.beginPath();
     ctx.arc(pos.x,pos.y,20,0,Math.PI*2);
     ctx.fill();
+    checkReveal();
   }
 
   canvas.onmousedown=(e)=>{isDrawing=true; scratch(e);};
@@ -93,8 +134,49 @@ function initScratch(){
   canvas.ontouchstart=(e)=>{isDrawing=true; scratch(e);};
   canvas.ontouchmove=(e)=>{scratch(e); e.preventDefault();};
   canvas.ontouchend=()=>{isDrawing=false;};
+
+  function checkReveal(){
+    const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    let total = imgData.data.length/4;
+    let cleared = 0;
+    for(let i=0;i<imgData.data.length;i+=4){
+      if(imgData.data[i+3]===0) cleared++;
+    }
+    if(cleared/total > REVEAL_THRESHOLD){
+      canvas.style.display="none";
+      launchConfetti();
+    }
+  }
 }
+
+// 🎉 ฟังก์ชันคอนเฟตตี้
+function launchConfetti(){
+  const duration = 2 * 1000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 }
+    });
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  }());
+}
+
+// โหลดไลบรารีคอนเฟตตี้
+var script = document.createElement("script");
+script.src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
+document.body.appendChild(script);
 </script>
 </body>
 </html>
-
