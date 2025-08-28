@@ -43,20 +43,24 @@ p { color:#000000; font-size:1.2em; margin-bottom:30px; }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 
-/* กระดาษ */
 .paper { 
   width:140px; height:90px; 
   background:#fdfdfd; 
-  border:2px dashed #000000; 
+  border:none;           /* เอาเส้นปะออก */
   border-radius:12px; 
   margin:20px auto; 
   cursor:pointer;
   display:flex; justify-content:center; align-items:center;
   font-size:16px; color:#000000;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* ใช้เงาแทนเส้น */
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.paper:hover { transform: scale(1.05); box-shadow: 4px 4px 12px rgba(0,0,0,0.3); }
+.paper:hover { 
+  transform: scale(1.05); 
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3); 
+  background:#f8f8f8; /* เพิ่ม hover effect นุ่ม ๆ */
+}
+
 
 /* Scratch container */
 #scratch-container { 
