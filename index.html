@@ -1,106 +1,115 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>แผ่นจุ่มกำลังใจ</title>
-  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
-  <style>
-    body { 
-      font-family: 'Itim', cursive; 
-      text-align: center; 
-      background: #fff0f5; 
-      margin: 0; 
-      padding: 20px;
-    }
-    h1 { 
-      color: #ff6f91; 
-      font-size: 2.5em; 
-      margin-bottom: 10px;
-    }
-    p { color:#ff6f91; font-size:1.2em; }
-    
-    /* ตะกร้า */
-    #basket { 
-      width:200px; 
-      margin-top:30px; 
-      cursor:pointer; 
-      transition: transform 0.2s;
-    }
-    .shake { 
-      animation: shake 0.5s; 
-    }
-    @keyframes shake {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(-5px, 0) rotate(-5deg); }
-      50% { transform: translate(5px, 0) rotate(5deg); }
-      75% { transform: translate(-5px, 0) rotate(-5deg); }
-      100% { transform: translate(0, 0) rotate(0deg); }
-    }
+<meta charset="UTF-8">
+<title>แผ่นจุ่มกำลังใจ</title>
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'PG Rohan DEMO';
+  src: url('PG_Rohan_DEMO.ttf') format('truetype');
+}
+body { 
+  font-family: 'PG Rohan DEMO', cursive; 
+  text-align: center; 
+  background: #ffffff; 
+  margin: 0; 
+  padding: 20px;
+}
+h1 { 
+  color: #ff6f91; 
+  font-size: 2.5em; 
+  margin-bottom: 10px;
+}
+p { color:#ff6f91; font-size:1.2em; }
 
-    /* กระดาษ */
-    .paper { 
-      width:140px; height:90px; 
-      background:#fff0f5; 
-      border:2px dashed #ff6f91; 
-      border-radius:12px; 
-      margin:20px auto; 
-      cursor:pointer;
-      display:flex; justify-content:center; align-items:center;
-      font-size:16px; color:#ff6f91;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
-    }
-    .paper:hover { transform: scale(1.1); background:#ffe4ec; }
+/* ตะกร้า */
+#basket { 
+  width:200px; 
+  margin-top:30px; 
+  cursor:pointer; 
+  transition: transform 0.2s;
+}
+.shake { 
+  animation: shake 0.5s; 
+}
+@keyframes shake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-5px, 0) rotate(-5deg); }
+  50% { transform: translate(5px, 0) rotate(5deg); }
+  75% { transform: translate(-5px, 0) rotate(-5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
 
-    /* Scratch container */
-    #scratch-container { 
-      position:relative; 
-      display:none; 
-      width:400px; 
-      margin:20px auto; 
-      border-radius:12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    #main-img { 
-      width:100%; 
-      border-radius:12px; 
-      display:block;
-    }
-    #scratchCanvas { 
-      position:absolute; top:0; left:0; 
-      border-radius:12px; 
-    }
+/* กระดาษ */
+.paper { 
+  width:140px; height:90px; 
+  background:#fff0f5; 
+  border:2px dashed #ff6f91; 
+  border-radius:12px; 
+  margin:20px auto; 
+  cursor:pointer;
+  display:flex; justify-content:center; align-items:center;
+  font-size:16px; color:#ff6f91;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.paper:hover { transform: scale(1.1); background:#ffe4ec; box-shadow: 4px 4px 12px rgba(0,0,0,0.4); }
 
-    /* ปุ่มดาวน์โหลด */
-    #downloadBtn { 
-      display:none; 
-      margin-top:20px; 
-      padding:10px 20px; 
-      background:#ff6f91; 
-      color:white; 
-      border:none; 
-      border-radius:8px; 
-      cursor:pointer; 
-      font-size:16px;
-    }
-    #downloadBtn:hover { background:#ff4d7a; }
-  </style>
+/* Scratch container */
+#scratch-container { 
+  position:relative; 
+  display:none; 
+  width:400px; 
+  margin:20px auto; 
+  border-radius:12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+#main-img { 
+  width:100%; 
+  border-radius:12px; 
+  display:block;
+}
+#scratchCanvas { 
+  position:absolute; top:0; left:0; 
+  border-radius:12px; 
+}
+
+/* ปุ่มดาวน์โหลด */
+#downloadBtn { 
+  display:none; 
+  margin-top:20px; 
+  padding:10px 20px; 
+  background:#ff6f91; 
+  color:white; 
+  border:none; 
+  border-radius:12px; 
+  cursor:pointer; 
+  font-size:16px;
+  transition: transform 0.2s, background 0.2s;
+}
+#downloadBtn:hover { 
+  background:#ff4d7a; 
+  transform: scale(1.05);
+}
+</style>
 </head>
 <body>
-  <h1>🎀 แผ่นจุ่มกำลังใจ 🎀</h1>
-  <p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูปน่ารัก 💌</p>
+<h1>🎀 แผ่นจุ่มกำลังใจ 🎀</h1>
+<p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูปน่ารัก 💌</p>
 
-  <img id="basket" src="Untitled design (13).png" alt="basket">
+<img id="basket" src="basket.png" alt="basket">
 
-  <div id="papers"></div>
+<div id="papers"></div>
 
-  <div id="scratch-container">
-    <img id="main-img" src="photo.jpg" alt="main">
-    <canvas id="scratchCanvas" width="400" height="300"></canvas>
-  </div>
+<div id="scratch-container">
+  <img id="main-img" src="photo1.jpg" alt="main">
+  <canvas id="scratchCanvas" width="400" height="300"></canvas>
+</div>
 
-  <button id="downloadBtn">ดาวน์โหลดภาพ</button>
+<button id="downloadBtn">ดาวน์โหลดภาพ</button>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
 const basket = document.getElementById("basket");
 const papers = document.getElementById("papers");
@@ -109,27 +118,31 @@ const canvas = document.getElementById("scratchCanvas");
 const ctx = canvas.getContext("2d");
 const downloadBtn = document.getElementById("downloadBtn");
 
-// 🎲 แสดงกระดาษเมื่อเขย่าหรือขยับเมาส์เร็ว
+// หลายภาพกระดาษ
+const papersImages = ["photo1.jpg","photo2.jpg","photo3.jpg"];
+let currentImage = "";
+
 function showPaper(){
-  if(papers.children.length>0) return; // ไม่ให้ซ้อน
+  if(papers.children.length>0) return;
   basket.classList.add("shake");
   setTimeout(()=>basket.classList.remove("shake"),600);
 
   const paper=document.createElement("div");
   paper.className="paper";
   paper.innerText="คลิกเพื่อขูด";
+  // เลือกภาพสุ่ม
+  currentImage = papersImages[Math.floor(Math.random()*papersImages.length)];
   paper.onclick=startScratch;
   papers.appendChild(paper);
 }
 
-// detect mouse shake
+// mouse shake
 document.addEventListener("mousemove",e=>{
   if(Math.abs(e.movementX)+Math.abs(e.movementY)>30){
     showPaper();
   }
 });
-
-// detect phone shake
+// phone shake
 window.addEventListener("devicemotion", e=>{
   const acc=e.accelerationIncludingGravity;
   if(acc && (Math.abs(acc.x)+Math.abs(acc.y)+Math.abs(acc.z) > 30)){
@@ -137,10 +150,12 @@ window.addEventListener("devicemotion", e=>{
   }
 });
 
-// start scratch
+// scratch
 function startScratch(){
   papers.innerHTML="";
   container.style.display="block";
+  document.getElementById("main-img").src=currentImage;
+
   ctx.fillStyle="#c0c0c0";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
@@ -173,14 +188,16 @@ function startScratch(){
     if(cleared/total > 0.6){
       canvas.style.display="none";
       downloadBtn.style.display="inline-block";
+      // เอฟเฟคคอนเฟตตี้
+      confetti({particleCount:100, spread:70, origin:{y:0.6}});
     }
   }
 }
 
-// ดาวน์โหลดภาพเต็ม
+// ดาวน์โหลด
 downloadBtn.onclick=function(){
   const link=document.createElement("a");
-  link.download="photo.jpg";
+  link.download=currentImage;
   link.href=document.getElementById("main-img").src;
   link.click();
 };
