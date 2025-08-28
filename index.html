@@ -7,28 +7,30 @@
 <style>
 @font-face {
   font-family: 'PG Rohan DEMO';
-  src: url('PG Rohan DEMO.ttf') format('truetype');
+  src: url('PG_Rohan_DEMO.ttf') format('truetype');
 }
 body { 
   font-family: 'PG Rohan DEMO', cursive; 
   text-align: center; 
   background: #ffffff; 
+  color: #000000; 
   margin: 0; 
   padding: 20px;
 }
 h1 { 
-  color: #ff6f91; 
+  color: #000000; 
   font-size: 2.5em; 
   margin-bottom: 10px;
 }
-p { color:#ff6f91; font-size:1.2em; }
+p { color:#000000; font-size:1.2em; margin-bottom:30px; }
 
 /* ตะกร้า */
 #basket { 
-  width:200px; 
-  margin-top:30px; 
+  width:180px; 
+  margin:20px auto; 
   cursor:pointer; 
   transition: transform 0.2s;
+  display:block;
 }
 .shake { 
   animation: shake 0.5s; 
@@ -44,17 +46,17 @@ p { color:#ff6f91; font-size:1.2em; }
 /* กระดาษ */
 .paper { 
   width:140px; height:90px; 
-  background:#fff0f5; 
-  border:2px dashed #ff6f91; 
+  background:#fdfdfd; 
+  border:2px dashed #000000; 
   border-radius:12px; 
   margin:20px auto; 
   cursor:pointer;
   display:flex; justify-content:center; align-items:center;
-  font-size:16px; color:#ff6f91;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  font-size:16px; color:#000000;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.paper:hover { transform: scale(1.1); background:#ffe4ec; box-shadow: 4px 4px 12px rgba(0,0,0,0.4); }
+.paper:hover { transform: scale(1.05); box-shadow: 4px 4px 12px rgba(0,0,0,0.3); }
 
 /* Scratch container */
 #scratch-container { 
@@ -63,7 +65,7 @@ p { color:#ff6f91; font-size:1.2em; }
   width:400px; 
   margin:20px auto; 
   border-radius:12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 #main-img { 
   width:100%; 
@@ -80,7 +82,7 @@ p { color:#ff6f91; font-size:1.2em; }
   display:none; 
   margin-top:20px; 
   padding:10px 20px; 
-  background:#ff6f91; 
+  background:#000000; 
   color:white; 
   border:none; 
   border-radius:12px; 
@@ -89,16 +91,19 @@ p { color:#ff6f91; font-size:1.2em; }
   transition: transform 0.2s, background 0.2s;
 }
 #downloadBtn:hover { 
-  background:#ff4d7a; 
+  background:#333333; 
   transform: scale(1.05);
 }
+
+/* จัด layout ให้อยู่กึ่งกลาง */
+#papers { margin-top:20px; }
 </style>
 </head>
 <body>
-<h1>🎀 แผ่นจุ่มกำลังใจ 🎀</h1>
-<p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูปน่ารัก 💌</p>
+<h1>แผ่นจุ่มกำลังใจ</h1>
+<p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูป</p>
 
-<img id="basket" src="Untitled design (13).png" alt="basket">
+<img id="basket" src="basket.png" alt="basket">
 
 <div id="papers"></div>
 
