@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>แผ่นจุ่มกำลังใจ</title>
+  <style>
+    body { font-family: 'Anuphan', sans-serif; text-align: center; background: #fdf6e3; }
+    .card { width: 200px; height: 100px; background: #ccc; margin: 20px auto; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; border-radius: 10px; }
+    canvas { margin-top: 20px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <h1>เลือกแผ่นจุ่มกำลังใจ</h1>
+  <div class="card" onclick="startGame()">🎴 คลิกหยิบแผ่น</div>
+  <canvas id="scratch" width="300" height="150"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/scratchcard-js"></script>
+  <script>
+    const messages = [
+      "วันนี้ก็เก่งมากแล้ว ✨",
+      "สู้ ๆ นะ! 💪",
+      "เธอทำได้แน่นอน 🌟",
+      "พักบ้างก็ได้นะ 💤",
+      "เราภูมิใจในตัวเธอ ❤️"
+    ];
+
+    function startGame(){
+      let msg = messages[Math.floor(Math.random() * messages.length)];
+
+      new ScratchCard('#scratch', {
+        scratchType: SCRATCH_TYPE.CIRCLE,
+        containerWidth: 300,
+        containerHeight: 150,
+        brushSrc: '',
+        clearZoneRadius: 30,
+        imageForwardSrc: '', // ภาพปิดทับ (เช่น กระดาษเทา)
+        imageBackgroundSrc: '', // ภาพพื้นหลัง (เช่น ลายสวยๆ)
+        callback: () => alert("กำลังใจของคุณคือ: " + msg)
+      });
+    }
+  </script>
+</body>
+</html>
