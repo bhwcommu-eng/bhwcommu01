@@ -1,338 +1,100 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>แผ่นจุ่มกำลังใจ — Scratch & Reveal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>แผ่นจุ่มกำลังใจ</title>
   <style>
-    :root{
-      --bg: #0f172a;         /* slate-900 */
-      --panel: #111827;      /* gray-900 */
-      --muted: #94a3b8;      /* slate-400 */
-      --accent: #38bdf8;     /* sky-400 */
-      --accent2: #34d399;    /* emerald-400 */
-      --card: #1f2937;       /* gray-800 */
-      --paper: #f8fafc;      /* slate-50 */
-      --shadow: 0 20px 60px rgba(0,0,0,.35);
-      --radius: 22px;
+    body { font-family: 'Tahoma', sans-serif; text-align: center; background: #fef9e7; }
+    h1 { color: #e67e22; }
+    #basket { margin: 20px; }
+    .card { display: inline-block; width: 100px; height: 60px; background: #d35400; 
+            color: white; border-radius: 10px; line-height: 60px; cursor: pointer; margin: 10px; }
+    #scratch-container { position: relative; width: 320px; margin: 20px auto; }
+    #hidden-message { 
+      width: 320px; height: 160px; border-radius: 10px; background: #f1c40f; 
+      display: flex; justify-content: center; align-items: center; 
+      font-size: 20px; font-weight: bold; color: #2c3e50;
     }
-    *{box-sizing: border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: 'Anuphan', system-ui, sans-serif; color:#e5e7eb; background:
-        radial-gradient(1200px 800px at 80% -10%, rgba(56,189,248,.15), transparent 60%) ,
-        radial-gradient(900px 600px at 0% 110%, rgba(52,211,153,.12), transparent 60%) ,
-        var(--bg);
+    #scratchCanvas {
+      position: absolute; top: 0; left: 0;
+      border-radius: 10px;
     }
-
-    .wrap{ max-width:1100px; margin:0 auto; padding:32px 18px 48px; }
-    header{ display:flex; align-items:center; gap:14px; margin-bottom:24px; }
-    .badge{ font-size:12px; color:var(--panel); background:linear-gradient(90deg,var(--accent),var(--accent2));
-      padding:4px 10px; border-radius:999px; font-weight:700 }
-    h1{ margin:0; font-weight:800; letter-spacing:.2px; font-size: clamp(22px, 2.8vw, 36px); }
-    p.lead{ margin:6px 0 24px; color:var(--muted); }
-
-    .board{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:16px; }
-    @media (max-width:780px){ .board{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
-
-    .card{
-      position:relative; background:linear-gradient(180deg,#222,#1b2331); border-radius: var(--radius);
-      padding:18px; height:120px; display:flex; align-items:center; justify-content:center; cursor:pointer;
-      box-shadow: var(--shadow); border:1px solid rgba(148,163,184,.15);
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      isolation:isolate; overflow:hidden;
-    }
-    .card:hover{ transform: translateY(-2px); box-shadow: 0 30px 80px rgba(0,0,0,.45); border-color: rgba(148,163,184,.3); }
-
-    .card .paper{
-      width:100%; height:100%; border-radius: 14px; background: var(--paper); color:#0f172a;
-      display:flex; align-items:center; justify-content:center; font-weight:800; font-size: clamp(16px, 2vw, 20px);
-      position: relative;
-    }
-    .paper::after{ content:"📜"; position:absolute; right:10px; bottom:6px; opacity:.2; }
-
-    .hint{ text-align:center; color:var(--muted); margin:10px 0 22px; font-size:14px; }
-
-    /* Scratch stage */
-    .stage{ display:none; margin-top:22px; }
-    .stage.active{ display:block; }
-
-    .panel{
-      position:relative; background: linear-gradient(180deg, #0b1220, #0a0f1a); border:1px solid rgba(148,163,184,.16);
-      border-radius: var(--radius); padding:22px; box-shadow: var(--shadow);
-    }
-
-    .scratch-wrap{ position:relative; width:min(560px, 100%); margin: 16px auto; }
-    .message{
-      position:relative; z-index:0; background: linear-gradient(180deg, #fff, #f8fafc);
-      color:#0f172a; border-radius: 16px; padding: 26px; text-align:center; min-height: 140px;
-      display:flex; align-items:center; justify-content:center; font-size: clamp(20px, 2.6vw, 28px);
-      font-weight:900; letter-spacing:.2px; border: 1px solid rgba(15,23,42,.08);
-    }
-
-    canvas#scratch{ position:absolute; inset:0; width:100%; height:100%; border-radius:16px; display:block; }
-
-    .controls{ display:flex; gap:12px; justify-content:center; margin-top:18px; flex-wrap:wrap }
-    .btn{
-      appearance:none; background: linear-gradient(180deg, rgba(56,189,248,.25), rgba(52,211,153,.25));
-      border:1px solid rgba(148,163,184,.25); color:#e5e7eb; padding:10px 14px; border-radius: 12px;
-      font-weight:700; cursor:pointer; transition:.2s; box-shadow: var(--shadow);
-    }
-    .btn:hover{ transform: translateY(-2px); }
-    .btn.secondary{ background: #111827; border-color: rgba(148,163,184,.3); }
-
-    footer{ margin-top:36px; text-align:center; color:var(--muted); font-size:12px }
-
-    /* Confetti */
-    .confetti{ position:fixed; left:0; top:0; width:100vw; height:100vh; pointer-events:none; overflow:hidden; z-index:9999 }
-    .confetti i{ position:absolute; width:8px; height:14px; opacity:.9; transform: translateY(-40px) rotate(0deg);
-      animation: fall linear forwards; border-radius:2px; }
-    @keyframes fall{ to{ transform: translateY(105vh) rotate(720deg); } }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <span class="badge">WEB GAME</span>
-      <h1>แผ่นจุ่มกำลังใจ</h1>
-    </header>
-    <p class="lead">หยิบแผ่นจากตะกร้า → ขูดกระดาษให้พอ แล้วอ่านพลังบวกของวันนี้ ✨</p>
+  <h1>แผ่นจุ่มกำลังใจ 🎴</h1>
+  <div id="basket"></div>
 
-    <!-- Basket Board -->
-    <section id="board" class="panel">
-      <div class="hint">เลือกแผ่น 1 ใบจากตะกร้าด้านล่าง</div>
-      <div class="board" id="boardGrid"></div>
-    </section>
-
-    <!-- Scratch Stage -->
-    <section id="stage" class="stage">
-      <div class="panel">
-        <div class="hint">ขูดจนโปร่งใส ~60% จะเผยข้อความกำลังใจ</div>
-        <div class="scratch-wrap">
-          <div id="msg" class="message">กำลังเตรียมกำลังใจ…</div>
-          <canvas id="scratch"></canvas>
-        </div>
-        <div class="controls">
-          <button id="btnAgain" class="btn">เลือกแผ่นใหม่</button>
-          <button id="btnShare" class="btn secondary">คัดลอกข้อความกำลังใจ</button>
-        </div>
-      </div>
-    </section>
-
-    <footer>สร้างด้วย HTML + CSS + JavaScript • พร้อมโฮสต์บน GitHub Pages</footer>
+  <div id="scratch-container" style="display:none;">
+    <div id="hidden-message">✨ กำลังใจ ✨</div>
+    <canvas id="scratchCanvas" width="320" height="160"></canvas>
   </div>
 
-  <div id="confetti" class="confetti" aria-hidden="true"></div>
+<script>
+const MESSAGES = [
+  "วันนี้ก็เก่งมากแล้ว ✨",
+  "สู้ ๆ นะ! 💪",
+  "เธอทำได้แน่นอน 🌟",
+  "พักบ้างก็ได้นะ 💤",
+  "เราภูมิใจในตัวเธอ ❤️"
+];
+const CARD_COUNT = 5; 
 
-  <script>
-    // ---------------------- CONFIG ----------------------
-    const MESSAGES = [
-      "วันนี้ก็เก่งมากแล้ว ✨",
-      "สู้ ๆ นะ! เธอทำได้แน่นอน 💪",
-      "พักบ้างก็ได้นะ ใจดีกับตัวเองด้วยนะ 🤍",
-      "ก้าวเล็ก ๆ ก็ยังเป็นก้าวไปข้างหน้า 🌱",
-      "เราภูมิใจในตัวเธอมาก ๆ เลยนะ 🫶",
-      "ทำเต็มที่แล้ว เยี่ยมมาก! ⭐",
-      "อย่าลืมยิ้มให้ตัวเองด้วยนะ 🙂",
-      "ผิดพลาดได้ แต่ไม่ยอมแพ้ก็พอ 🧭",
-      "ความพยายามของเธอสวยงามเสมอ 🌟",
-      "ขอบคุณที่ยังไม่หยุดเดินต่อไป 🚶‍♀️"
-    ];
+// สร้างการ์ดเลือก
+const basket = document.getElementById("basket");
+for(let i=0;i<CARD_COUNT;i++){
+  let div=document.createElement("div");
+  div.className="card";
+  div.innerText="หยิบแผ่น "+(i+1);
+  div.onclick=()=>startScratch();
+  basket.appendChild(div);
+}
 
-    const CARD_COUNT = 8;        // จำนวนแผ่นในตะกร้า
-    const REVEAL_THRESHOLD = 0.60; // เปอร์เซ็นต์โปร่งใสที่ต้องขูดถึง
-    const BRUSH_RADIUS = 22;     // ขนาดหัวแปรงขูด (px)
+function startScratch(){
+  // เลือกข้อความสุ่ม
+  const msg = MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
+  document.getElementById("hidden-message").innerText = msg;
 
-    // ---------------------- STATE ----------------------
-    let selectedMessage = "";
-    let isRevealed = false;
+  document.getElementById("scratch-container").style.display="block";
+  initScratch();
+}
 
-    // DOM
-    const board = document.getElementById('board');
-    const boardGrid = document.getElementById('boardGrid');
-    const stage = document.getElementById('stage');
-    const msgEl = document.getElementById('msg');
-    const scratch = document.getElementById('scratch');
-    const btnAgain = document.getElementById('btnAgain');
-    const btnShare = document.getElementById('btnShare');
-    const confetti = document.getElementById('confetti');
+function initScratch(){
+  const canvas = document.getElementById("scratchCanvas");
+  const ctx = canvas.getContext("2d");
 
-    // ---------------------- INIT ----------------------
-    function init(){
-      renderBoard();
-      attachEvents();
-      fitCanvas();
-      window.addEventListener('resize', fitCanvas);
-    }
+  // ระบายพื้นทับ (สีเทา)
+  ctx.fillStyle = "#7f8c8d";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    function renderBoard(){
-      boardGrid.innerHTML = '';
-      for(let i=0;i<CARD_COUNT;i++){
-        const item = document.createElement('div');
-        item.className = 'card';
-        item.innerHTML = `<div class="paper">หยิบแผ่นที่ ${i+1}</div>`;
-        item.addEventListener('click', onPickCard);
-        boardGrid.appendChild(item);
-      }
-    }
+  let isDrawing=false;
 
-    function onPickCard(){
-      // สุ่มข้อความและไปหน้า scratch
-      selectedMessage = MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
-      msgEl.textContent = selectedMessage;
-      isRevealed = false;
-      board.style.display = 'none';
-      stage.classList.add('active');
-      prepareScratchLayer();
-    }
+  function getPos(e){
+    const rect=canvas.getBoundingClientRect();
+    const clientX = e.touches? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches? e.touches[0].clientY : e.clientY;
+    return {x: clientX-rect.left, y: clientY-rect.top};
+  }
 
-    // ---------------------- SCRATCH LOGIC ----------------------
-    let ctx, isDrawing = false;
+  function scratch(e){
+    if(!isDrawing) return;
+    const pos=getPos(e);
+    ctx.globalCompositeOperation="destination-out";
+    ctx.beginPath();
+    ctx.arc(pos.x,pos.y,20,0,Math.PI*2);
+    ctx.fill();
+  }
 
-    function fitCanvas(){
-      const rect = msgEl.getBoundingClientRect();
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      scratch.width = Math.floor(rect.width * dpr);
-      scratch.height = Math.floor(rect.height * dpr);
-      scratch.style.width = rect.width + 'px';
-      scratch.style.height = rect.height + 'px';
-      ctx = scratch.getContext('2d');
-      ctx.scale(dpr, dpr);
-      if(stage.classList.contains('active')){
-        paintCover();
-      }
-    }
+  canvas.onmousedown=(e)=>{isDrawing=true; scratch(e);};
+  canvas.onmousemove=scratch;
+  canvas.onmouseup=()=>{isDrawing=false;};
+  canvas.onmouseleave=()=>{isDrawing=false;};
 
-    function paintCover(){
-      const w = scratch.clientWidth, h = scratch.clientHeight;
-      // พื้นผิวปิดทับ (กระดาษสีเทามีลาย)
-      const grd = ctx.createLinearGradient(0,0,w,h);
-      grd.addColorStop(0, '#9aa3ad');
-      grd.addColorStop(1, '#6b7280');
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = grd;
-      ctx.fillRect(0,0,w,h);
-      // ใส่ตัวหนังสือกำกับ
-      ctx.fillStyle = 'rgba(0,0,0,.18)';
-      ctx.font = '700 18px Anuphan';
-      ctx.textAlign = 'center';
-      ctx.fillText('ขูดเพื่อเปิดข้อความกำลังใจ', w/2, h/2);
-      // เส้น pattern บาง ๆ
-      ctx.strokeStyle = 'rgba(255,255,255,.2)';
-      for(let y=10; y<h; y+=12){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-    }
-
-    function prepareScratchLayer(){
-      paintCover();
-      bindScratchEvents();
-    }
-
-    function bindScratchEvents(){
-      const start = (e)=>{ isDrawing = true; scratchDraw(e, true); };
-      const move  = (e)=>{ if(!isDrawing) return; scratchDraw(e, false); };
-      const end   = ()=>{ if(!isDrawing) return; isDrawing=false; checkReveal(); };
-
-      scratch.onpointerdown = start;
-      scratch.onpointermove = move;
-      scratch.onpointerup = end;
-      scratch.onpointerleave = end;
-      scratch.onpointercancel = end;
-
-      // Prevent scrolling while scratching on mobile
-      scratch.addEventListener('touchmove', (e)=> e.preventDefault(), {passive:false});
-    }
-
-    function scratchDraw(e, isFirst){
-      const rect = scratch.getBoundingClientRect();
-      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-      const y = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(x, y, BRUSH_RADIUS, 0, Math.PI*2);
-      ctx.fill();
-      if(isFirst){ // เพิ่มจุดที่สองเล็กน้อยเพื่อเริ่มการลบ
-        ctx.beginPath(); ctx.arc(x+0.001, y+0.001, BRUSH_RADIUS, 0, Math.PI*2); ctx.fill();
-      }
-    }
-
-    function checkReveal(){
-      // ประเมินเปอร์เซ็นต์โปร่งใส (สุ่ม sample เพื่อเร็ว)
-      const w = scratch.width, h = scratch.height;
-      const sampleStep = 8; // ยิ่งมากยิ่งเร็ว แต่ความแม่นจะลดลงเล็กน้อย
-      try{
-        const img = ctx.getImageData(0,0,w,h).data; // RGBA
-        let cleared = 0, total = 0;
-        for(let y=0; y<h; y+=sampleStep){
-          for(let x=0; x<w; x+=sampleStep){
-            const idx = (y*w + x)*4 + 3; // ช่อง Alpha
-            const alpha = img[idx];
-            if(alpha < 20) cleared++;
-            total++;
-          }
-        }
-        const ratio = cleared/total;
-        if(ratio >= REVEAL_THRESHOLD) reveal();
-      }catch(err){
-        // บางเบราว์เซอร์อาจบล็อก getImageData หากมี cross-origin แต่เราไม่ได้ใช้ภาพภายนอก
-        console.warn(err);
-      }
-    }
-
-    function reveal(){
-      if(isRevealed) return; isRevealed = true;
-      // เคลียร์เลเยอร์ปิดทั้งหมด
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillRect(0,0,scratch.clientWidth, scratch.clientHeight);
-      boomConfetti();
-    }
-
-    // ---------------------- UI EVENTS ----------------------
-    function attachEvents(){
-      btnAgain.addEventListener('click', ()=>{
-        stage.classList.remove('active');
-        board.style.display = '';
-        // รีเซ็ต
-        paintCover();
-        window.scrollTo({top:0, behavior:'smooth'});
-      });
-
-      btnShare.addEventListener('click', async ()=>{
-        const txt = selectedMessage || msgEl.textContent.trim();
-        try{
-          await navigator.clipboard.writeText(txt);
-          btnShare.textContent = 'คัดลอกแล้ว ✅';
-          setTimeout(()=> btnShare.textContent = 'คัดลอกข้อความกำลังใจ', 1400);
-        }catch(e){
-          alert('คัดลอกไม่สำเร็จ กรุณาคัดลอกเอง:\n' + txt);
-        }
-      });
-    }
-
-    // ---------------------- CONFETTI ----------------------
-    function boomConfetti(){
-      // สร้างกระดาษโปรยแบบเบา ๆ ไม่ใช้ไลบรารี
-      const colors = ['#38bdf8','#34d399','#f472b6','#f59e0b','#60a5fa','#a78bfa'];
-      const count = 80;
-      for(let i=0;i<count;i++){
-        const piece = document.createElement('i');
-        const size = 6 + Math.random()*10;
-        piece.style.left = (Math.random()*100) + 'vw';
-        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
-        piece.style.width = size + 'px';
-        piece.style.height = (size*1.4) + 'px';
-        piece.style.opacity = 0.85 + Math.random()*0.15;
-        piece.style.animationDuration = (7 + Math.random()*5) + 's';
-        piece.style.animationDelay = (Math.random()*0.2) + 's';
-        confetti.appendChild(piece);
-        setTimeout(()=> piece.remove(), 13000);
-      }
-    }
-
-    // Start
-    init();
-  </script>
+  canvas.ontouchstart=(e)=>{isDrawing=true; scratch(e);};
+  canvas.ontouchmove=(e)=>{scratch(e); e.preventDefault();};
+  canvas.ontouchend=()=>{isDrawing=false;};
+}
+</script>
 </body>
 </html>
+
