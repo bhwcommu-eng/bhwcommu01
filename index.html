@@ -2,31 +2,94 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ตะกร้ากำลังใจ</title>
+  <title>แผ่นจุ่มกำลังใจ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
   <style>
-    body { text-align:center; background:#fffafc; font-family:sans-serif; }
-    #basket { width:200px; margin-top:50px; }
-    .shake { animation: shake 0.5s; }
+    body { 
+      font-family: 'Itim', cursive; 
+      text-align: center; 
+      background: #fff0f5; 
+      margin: 0; 
+      padding: 20px;
+    }
+    h1 { 
+      color: #ff6f91; 
+      font-size: 2.5em; 
+      margin-bottom: 10px;
+    }
+    p { color:#ff6f91; font-size:1.2em; }
+    
+    /* ตะกร้า */
+    #basket { 
+      width:200px; 
+      margin-top:30px; 
+      cursor:pointer; 
+      transition: transform 0.2s;
+    }
+    .shake { 
+      animation: shake 0.5s; 
+    }
     @keyframes shake {
-      0% { transform: translate(0, 0); }
-      25% { transform: translate(-5px, 0); }
-      50% { transform: translate(5px, 0); }
-      75% { transform: translate(-5px, 0); }
-      100% { transform: translate(0, 0); }
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-5px, 0) rotate(-5deg); }
+      50% { transform: translate(5px, 0) rotate(5deg); }
+      75% { transform: translate(-5px, 0) rotate(-5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
     }
+
+    /* กระดาษ */
     .paper { 
-      width:120px; height:80px; 
-      background:#ffe; border:1px dashed #aaa; 
-      margin:20px auto; cursor:pointer;
+      width:140px; height:90px; 
+      background:#fff0f5; 
+      border:2px dashed #ff6f91; 
+      border-radius:12px; 
+      margin:20px auto; 
+      cursor:pointer;
+      display:flex; justify-content:center; align-items:center;
+      font-size:16px; color:#ff6f91;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
     }
-    #scratch-container { position:relative; display:none; width:400px; margin:20px auto; }
-    #main-img { width:100%; border-radius:10px; }
-    #scratchCanvas { position:absolute; top:0; left:0; border-radius:10px; }
-    #downloadBtn { display:none; margin-top:20px; padding:10px 20px; }
+    .paper:hover { transform: scale(1.1); background:#ffe4ec; }
+
+    /* Scratch container */
+    #scratch-container { 
+      position:relative; 
+      display:none; 
+      width:400px; 
+      margin:20px auto; 
+      border-radius:12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    #main-img { 
+      width:100%; 
+      border-radius:12px; 
+      display:block;
+    }
+    #scratchCanvas { 
+      position:absolute; top:0; left:0; 
+      border-radius:12px; 
+    }
+
+    /* ปุ่มดาวน์โหลด */
+    #downloadBtn { 
+      display:none; 
+      margin-top:20px; 
+      padding:10px 20px; 
+      background:#ff6f91; 
+      color:white; 
+      border:none; 
+      border-radius:8px; 
+      cursor:pointer; 
+      font-size:16px;
+    }
+    #downloadBtn:hover { background:#ff4d7a; }
   </style>
 </head>
 <body>
-  <h1>ตะกร้ากำลังใจ</h1>
+  <h1>🎀 แผ่นจุ่มกำลังใจ 🎀</h1>
+  <p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูปน่ารัก 💌</p>
+
   <img id="basket" src="basket.png" alt="basket">
 
   <div id="papers"></div>
@@ -46,8 +109,9 @@ const canvas = document.getElementById("scratchCanvas");
 const ctx = canvas.getContext("2d");
 const downloadBtn = document.getElementById("downloadBtn");
 
-// 🎲 เขย่า = แสดงกระดาษ
+// 🎲 แสดงกระดาษเมื่อเขย่าหรือขยับเมาส์เร็ว
 function showPaper(){
+  if(papers.children.length>0) return; // ไม่ให้ซ้อน
   basket.classList.add("shake");
   setTimeout(()=>basket.classList.remove("shake"),600);
 
@@ -55,15 +119,14 @@ function showPaper(){
   paper.className="paper";
   paper.innerText="คลิกเพื่อขูด";
   paper.onclick=startScratch;
-  papers.innerHTML="";
   papers.appendChild(paper);
 }
 
 // detect mouse shake
-let lastX=0,lastY=0;
 document.addEventListener("mousemove",e=>{
-  let dx=Math.abs(e.movementX), dy=Math.abs(e.movementY);
-  if(dx>30||dy>30) showPaper();
+  if(Math.abs(e.movementX)+Math.abs(e.movementY)>30){
+    showPaper();
+  }
 });
 
 // detect phone shake
@@ -78,7 +141,7 @@ window.addEventListener("devicemotion", e=>{
 function startScratch(){
   papers.innerHTML="";
   container.style.display="block";
-  ctx.fillStyle="#ccc";
+  ctx.fillStyle="#c0c0c0";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
   let drawing=false;
