@@ -6,7 +6,7 @@
 <style>
 @font-face {
   font-family: 'PG Rohan DEMO';
-  src: url('PG Rohan DEMO.ttf') format('truetype');
+  src: url('PG_Rohan_DEMO.ttf') format('truetype');
 }
 body { 
   font-family: 'PG Rohan DEMO', cursive; 
@@ -62,13 +62,16 @@ p { font-size:1.2em; margin-bottom:30px; }
 #downloadBtn:hover { background:#333333; transform: scale(1.05); }
 
 #papers { margin-top:20px; }
+button#startBtn { padding:10px 20px; margin-bottom:20px; font-size:16px; cursor:pointer; border-radius:12px; border:none; background:#000000; color:#fff; }
+button#startBtn:hover { background:#333333; }
 </style>
 </head>
 <body>
 <h1>แผ่นจุ่มกำลังใจ</h1>
 <p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูป</p>
 
-<img id="basket" src="Untitled design (13).png" alt="basket">
+<button id="startBtn">แตะเพื่อเริ่ม</button>
+<img id="basket" src="basket.png" alt="basket">
 
 <div id="papers"></div>
 
@@ -88,11 +91,12 @@ const canvas = document.getElementById("scratchCanvas");
 const ctx = canvas.getContext("2d");
 const mainImg = document.getElementById("main-img");
 const downloadBtn = document.getElementById("downloadBtn");
+const startBtn = document.getElementById("startBtn");
 
 const papersImages = ["photo1.jpg","photo2.jpg","photo3.jpg"];
 let currentImage = "";
 
-// สุ่มกระดาษ
+// แสดงกระดาษ
 function showPaper(){
   if(papers.children.length>0) return;
   basket.classList.add("shake");
@@ -106,32 +110,46 @@ function showPaper(){
   papers.appendChild(paper);
 }
 
-// Mouse shake
-document.addEventListener("mousemove",e=>{
-  if(Math.abs(e.movementX)+Math.abs(e.movementY)>30){
-    showPaper();
-  }
-});
-
-// Mobile shake with permission
+// เขย่าตะกร้า
 function motionHandler(e){
   const acc = e.accelerationIncludingGravity;
   if(acc && (Math.abs(acc.x)+Math.abs(acc.y)+Math.abs(acc.z) > 30)){
     showPaper();
   }
 }
-if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-  const startBtn = document.createElement('button');
-  startBtn.innerText = "แตะเพื่อเริ่ม";
-  document.body.insertBefore(startBtn, basket);
-  startBtn.onclick = () => {
+
+// เริ่มระบบ motion (iOS ต้อง permission)
+startBtn.onclick = () => {
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
     DeviceMotionEvent.requestPermission().then(response=>{
       if(response==='granted') window.addEventListener('devicemotion', motionHandler);
     });
-    startBtn.remove();
+  } else {
+    window.addEventListener('devicemotion', motionHandler);
+  }
+  startBtn.style.display="none";
+};
+
+// Mouse shake สำหรับ desktop
+document.addEventListener("mousemove",e=>{
+  if(Math.abs(e.movementX)+Math.abs(e.movementY)>30) showPaper();
+});
+
+// Scratch effect
+function startScratch(){
+  papers.innerHTML="";
+  container.style.display="block";
+  mainImg.src = currentImage;
+
+  mainImg.onload = () => {
+    canvas.width = mainImg.clientWidth;
+    canvas.height = mainImg.clientHeight;
+
+    ctx.fillStyle="#c0c0c0";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    setupScratchEvents();
   };
-} else {
-  window.addEventListener('devicemotion', motionHandler);
 }
 
 function setupScratchEvents(){
@@ -145,35 +163,21 @@ function setupScratchEvents(){
   canvas.addEventListener("touchstart",()=>drawing=true);
   canvas.addEventListener("touchend",()=>drawing=false);
   canvas.addEventListener("touchmove", e=>{
-    e.preventDefault(); // ป้องกัน scroll มือถือ
+    e.preventDefault();
     scratch(e);
   }, {passive:false});
 
   function scratch(e){
     if(!drawing) return;
     const rect=canvas.getBoundingClientRect();
-    const x=(e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const y=(e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+    const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
     ctx.globalCompositeOperation="destination-out";
     ctx.beginPath();
     ctx.arc(x,y,20,0,Math.PI*2);
     ctx.fill();
     checkReveal();
   }
-
-  function checkReveal(){
-    const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
-    let total=imgData.data.length/4, cleared=0;
-    for(let i=0;i<imgData.data.length;i+=4){
-      if(imgData.data[i+3]===0) cleared++;
-    }
-    if(cleared/total > 0.6){
-      canvas.style.display="none";
-      downloadBtn.style.display="inline-block";
-      confetti({particleCount:100, spread:70, origin:{y:0.6}});
-    }
-  }
-}
 
   function checkReveal(){
     const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
@@ -199,4 +203,3 @@ downloadBtn.onclick=function(){
 </script>
 </body>
 </html>
-
