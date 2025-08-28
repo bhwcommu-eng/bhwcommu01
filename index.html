@@ -134,37 +134,46 @@ if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.request
   window.addEventListener('devicemotion', motionHandler);
 }
 
-// Scratch
-function startScratch(){
-  papers.innerHTML="";
-  container.style.display="block";
-  mainImg.src = currentImage;
-
-  canvas.width = mainImg.clientWidth;
-  canvas.height = mainImg.clientHeight;
-
-  ctx.fillStyle="#c0c0c0";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
+function setupScratchEvents(){
   let drawing=false;
+
   canvas.addEventListener("mousedown",()=>drawing=true);
   canvas.addEventListener("mouseup",()=>drawing=false);
+  canvas.addEventListener("mouseleave",()=>drawing=false);
   canvas.addEventListener("mousemove",scratch);
+
   canvas.addEventListener("touchstart",()=>drawing=true);
   canvas.addEventListener("touchend",()=>drawing=false);
-  canvas.addEventListener("touchmove",e=>{ e.preventDefault(); scratch(e); }, {passive:false});
+  canvas.addEventListener("touchmove", e=>{
+    e.preventDefault(); // ป้องกัน scroll มือถือ
+    scratch(e);
+  }, {passive:false});
 
   function scratch(e){
     if(!drawing) return;
     const rect=canvas.getBoundingClientRect();
-    const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
-    const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+    const x=(e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y=(e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
     ctx.globalCompositeOperation="destination-out";
     ctx.beginPath();
     ctx.arc(x,y,20,0,Math.PI*2);
     ctx.fill();
     checkReveal();
   }
+
+  function checkReveal(){
+    const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+    let total=imgData.data.length/4, cleared=0;
+    for(let i=0;i<imgData.data.length;i+=4){
+      if(imgData.data[i+3]===0) cleared++;
+    }
+    if(cleared/total > 0.6){
+      canvas.style.display="none";
+      downloadBtn.style.display="inline-block";
+      confetti({particleCount:100, spread:70, origin:{y:0.6}});
+    }
+  }
+}
 
   function checkReveal(){
     const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
