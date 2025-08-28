@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>แผ่นจุ่มกำลังใจ</title>
-<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
 <style>
 @font-face {
   font-family: 'PG Rohan DEMO';
-  src: url('PG Rohan DEMO.ttf') format('truetype');
+  src: url('PG_Rohan_DEMO.ttf') format('truetype');
 }
 body { 
   font-family: 'PG Rohan DEMO', cursive; 
@@ -17,89 +16,51 @@ body {
   margin: 0; 
   padding: 20px;
 }
-h1 { 
-  color: #000000; 
-  font-size: 2.5em; 
-  margin-bottom: 10px;
-}
-p { color:#000000; font-size:1.2em; margin-bottom:30px; }
+h1 { font-size:2.5em; margin-bottom:10px; }
+p { font-size:1.2em; margin-bottom:30px; }
 
 /* ตะกร้า */
 #basket { 
-  width:180px; 
-  margin:20px auto; 
-  cursor:pointer; 
-  transition: transform 0.2s;
-  display:block;
+  width:180px; margin:20px auto; cursor:pointer; transition: transform 0.2s; display:block;
 }
-.shake { 
-  animation: shake 0.5s; 
-}
-@keyframes shake {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(-5px, 0) rotate(-5deg); }
-  50% { transform: translate(5px, 0) rotate(5deg); }
-  75% { transform: translate(-5px, 0) rotate(-5deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+.shake { animation: shake 0.5s; }
+@keyframes shake{
+  0% {transform:translate(0,0) rotate(0deg);}
+  25% {transform:translate(-5px,0) rotate(-5deg);}
+  50% {transform:translate(5px,0) rotate(5deg);}
+  75% {transform:translate(-5px,0) rotate(-5deg);}
+  100% {transform:translate(0,0) rotate(0deg);}
 }
 
+/* กระดาษ */
 .paper { 
   width:140px; height:90px; 
-  background:#fdfdfd; 
-  border:none;           /* เอาเส้นปะออก */
-  border-radius:12px; 
-  margin:20px auto; 
-  cursor:pointer;
+  background:#fdfdfd; border:none; border-radius:12px; 
+  margin:20px auto; cursor:pointer;
   display:flex; justify-content:center; align-items:center;
   font-size:16px; color:#000000;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* ใช้เงาแทนเส้น */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .paper:hover { 
-  transform: scale(1.05); 
-  box-shadow: 0 6px 14px rgba(0,0,0,0.3); 
-  background:#f8f8f8; /* เพิ่ม hover effect นุ่ม ๆ */
+  transform: scale(1.05); box-shadow:0 6px 14px rgba(0,0,0,0.3); 
+  background:#f8f8f8;
 }
-
 
 /* Scratch container */
 #scratch-container { 
-  position:relative; 
-  display:none; 
-  width:400px; 
-  margin:20px auto; 
-  border-radius:12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  position:relative; display:none; width:90%; max-width:400px; margin:20px auto; border-radius:12px; box-shadow:0 6px 12px rgba(0,0,0,0.15);
 }
-#main-img { 
-  width:100%; 
-  border-radius:12px; 
-  display:block;
-}
-#scratchCanvas { 
-  position:absolute; top:0; left:0; 
-  border-radius:12px; 
-}
+#main-img { width:100%; border-radius:12px; display:block; }
+#scratchCanvas { position:absolute; top:0; left:0; border-radius:12px; }
 
 /* ปุ่มดาวน์โหลด */
 #downloadBtn { 
-  display:none; 
-  margin-top:20px; 
-  padding:10px 20px; 
-  background:#000000; 
-  color:white; 
-  border:none; 
-  border-radius:12px; 
-  cursor:pointer; 
-  font-size:16px;
+  display:none; margin-top:20px; padding:10px 20px; background:#000000; color:white; border:none; border-radius:12px; cursor:pointer; font-size:16px;
   transition: transform 0.2s, background 0.2s;
 }
-#downloadBtn:hover { 
-  background:#333333; 
-  transform: scale(1.05);
-}
+#downloadBtn:hover { background:#333333; transform: scale(1.05); }
 
-/* จัด layout ให้อยู่กึ่งกลาง */
 #papers { margin-top:20px; }
 </style>
 </head>
@@ -107,13 +68,13 @@ p { color:#000000; font-size:1.2em; margin-bottom:30px; }
 <h1>แผ่นจุ่มกำลังใจ</h1>
 <p>เขย่าตะกร้าแล้วเลือกกระดาษเพื่อขูดดูรูป</p>
 
-<img id="basket" src="Untitled design (13).png" alt="basket">
+<img id="basket" src="basket.png" alt="basket">
 
 <div id="papers"></div>
 
 <div id="scratch-container">
-  <img id="main-img" src="photo1.jpg" alt="main">
-  <canvas id="scratchCanvas" width="400" height="300"></canvas>
+  <img id="main-img" src="" alt="main">
+  <canvas id="scratchCanvas"></canvas>
 </div>
 
 <button id="downloadBtn">ดาวน์โหลดภาพ</button>
@@ -125,12 +86,13 @@ const papers = document.getElementById("papers");
 const container = document.getElementById("scratch-container");
 const canvas = document.getElementById("scratchCanvas");
 const ctx = canvas.getContext("2d");
+const mainImg = document.getElementById("main-img");
 const downloadBtn = document.getElementById("downloadBtn");
 
-// หลายภาพกระดาษ
 const papersImages = ["photo1.jpg","photo2.jpg","photo3.jpg"];
 let currentImage = "";
 
+// สุ่มกระดาษ
 function showPaper(){
   if(papers.children.length>0) return;
   basket.classList.add("shake");
@@ -139,31 +101,47 @@ function showPaper(){
   const paper=document.createElement("div");
   paper.className="paper";
   paper.innerText="คลิกเพื่อขูด";
-  // เลือกภาพสุ่ม
   currentImage = papersImages[Math.floor(Math.random()*papersImages.length)];
   paper.onclick=startScratch;
   papers.appendChild(paper);
 }
 
-// mouse shake
+// Mouse shake
 document.addEventListener("mousemove",e=>{
   if(Math.abs(e.movementX)+Math.abs(e.movementY)>30){
     showPaper();
   }
 });
-// phone shake
-window.addEventListener("devicemotion", e=>{
-  const acc=e.accelerationIncludingGravity;
+
+// Mobile shake with permission
+function motionHandler(e){
+  const acc = e.accelerationIncludingGravity;
   if(acc && (Math.abs(acc.x)+Math.abs(acc.y)+Math.abs(acc.z) > 30)){
     showPaper();
   }
-});
+}
+if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+  const startBtn = document.createElement('button');
+  startBtn.innerText = "แตะเพื่อเริ่ม";
+  document.body.insertBefore(startBtn, basket);
+  startBtn.onclick = () => {
+    DeviceMotionEvent.requestPermission().then(response=>{
+      if(response==='granted') window.addEventListener('devicemotion', motionHandler);
+    });
+    startBtn.remove();
+  };
+} else {
+  window.addEventListener('devicemotion', motionHandler);
+}
 
-// scratch
+// Scratch
 function startScratch(){
   papers.innerHTML="";
   container.style.display="block";
-  document.getElementById("main-img").src=currentImage;
+  mainImg.src = currentImage;
+
+  canvas.width = mainImg.clientWidth;
+  canvas.height = mainImg.clientHeight;
 
   ctx.fillStyle="#c0c0c0";
   ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -174,7 +152,7 @@ function startScratch(){
   canvas.addEventListener("mousemove",scratch);
   canvas.addEventListener("touchstart",()=>drawing=true);
   canvas.addEventListener("touchend",()=>drawing=false);
-  canvas.addEventListener("touchmove",scratch);
+  canvas.addEventListener("touchmove",e=>{ e.preventDefault(); scratch(e); }, {passive:false});
 
   function scratch(e){
     if(!drawing) return;
@@ -197,7 +175,6 @@ function startScratch(){
     if(cleared/total > 0.6){
       canvas.style.display="none";
       downloadBtn.style.display="inline-block";
-      // เอฟเฟคคอนเฟตตี้
       confetti({particleCount:100, spread:70, origin:{y:0.6}});
     }
   }
@@ -207,9 +184,10 @@ function startScratch(){
 downloadBtn.onclick=function(){
   const link=document.createElement("a");
   link.download=currentImage;
-  link.href=document.getElementById("main-img").src;
+  link.href=mainImg.src;
   link.click();
 };
 </script>
 </body>
 </html>
+
