@@ -2,181 +2,125 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>แผ่นจุ่มกำลังใจ</title>
-  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <title>ตะกร้ากำลังใจ</title>
   <style>
-    body { 
-      font-family: 'Itim', cursive; 
-      text-align: center; 
-      background: #fffafc; 
-      margin: 0; 
-      padding: 20px;
+    body { text-align:center; background:#fffafc; font-family:sans-serif; }
+    #basket { width:200px; margin-top:50px; }
+    .shake { animation: shake 0.5s; }
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-5px, 0); }
+      50% { transform: translate(5px, 0); }
+      75% { transform: translate(-5px, 0); }
+      100% { transform: translate(0, 0); }
     }
-    h1 { 
-      color: #ff6f91; 
-      font-size: 2.5em;
-      margin-bottom: 20px;
+    .paper { 
+      width:120px; height:80px; 
+      background:#ffe; border:1px dashed #aaa; 
+      margin:20px auto; cursor:pointer;
     }
-    #basket { margin: 20px; }
-    .card { 
-      display: inline-block; 
-      width: 120px; height: 80px; 
-      background: #ffe4ec; 
-      border: 2px dashed #ff6f91; 
-      border-radius: 12px; 
-      margin: 10px; 
-      line-height: 80px; 
-      cursor: pointer; 
-      font-size: 18px; 
-      color: #ff6f91;
-      transition: transform 0.2s;
-    }
-    .card:hover {
-      transform: scale(1.1);
-      background: #ffd1e8;
-    }
-    #scratch-container { 
-      position: relative; 
-      width: 320px; 
-      margin: 20px auto; 
-      display: none;
-    }
-    #hidden-message { 
-      width: 320px; height: 160px; 
-      border-radius: 12px; 
-      background: #fff0f5; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      font-size: 22px; 
-      font-weight: bold; 
-      color: #e75480; 
-      border: 3px solid #ff6f91;
-    }
-    #scratchCanvas {
-      position: absolute; top: 0; left: 0;
-      border-radius: 12px;
-    }
+    #scratch-container { position:relative; display:none; width:400px; margin:20px auto; }
+    #main-img { width:100%; border-radius:10px; }
+    #scratchCanvas { position:absolute; top:0; left:0; border-radius:10px; }
+    #downloadBtn { display:none; margin-top:20px; padding:10px 20px; }
   </style>
 </head>
 <body>
-  <h1>🎀 แผ่นจุ่มกำลังใจ 🎀</h1>
-  <p>เลือกการ์ดที่ชอบ แล้วขูดเพื่อดูข้อความกำลังใจ 💌</p>
-  <div id="basket"></div>
+  <h1>ตะกร้ากำลังใจ</h1>
+  <img id="basket" src="basket.png" alt="basket">
+
+  <div id="papers"></div>
 
   <div id="scratch-container">
-    <div id="hidden-message">✨ กำลังใจ ✨</div>
-    <canvas id="scratchCanvas" width="320" height="160"></canvas>
+    <img id="main-img" src="photo.jpg" alt="main">
+    <canvas id="scratchCanvas" width="400" height="300"></canvas>
   </div>
 
+  <button id="downloadBtn">ดาวน์โหลดภาพ</button>
+
 <script>
-const MESSAGES = [
-  "วันนี้ก็เก่งมากแล้วนะ ✨",
-  "สู้ ๆ นะ! เธอทำได้ 💪",
-  "พักบ้างก็ไม่เป็นไรนะ 💤",
-  "เราภูมิใจในตัวเธอมาก ❤️",
-  "อนาคตสดใสรออยู่แน่นอน 🌈",
-  "ยิ้มไว้ เธอสวยที่สุดแล้ว 😊"
-];
-const CARD_COUNT = 5;
-const REVEAL_THRESHOLD = 0.6; // 60%
-
-// สร้างการ์ดเลือก
 const basket = document.getElementById("basket");
-for(let i=0;i<CARD_COUNT;i++){
-  let div=document.createElement("div");
-  div.className="card";
-  div.innerText="การ์ด "+(i+1);
-  div.onclick=()=>startScratch();
-  basket.appendChild(div);
+const papers = document.getElementById("papers");
+const container = document.getElementById("scratch-container");
+const canvas = document.getElementById("scratchCanvas");
+const ctx = canvas.getContext("2d");
+const downloadBtn = document.getElementById("downloadBtn");
+
+// 🎲 เขย่า = แสดงกระดาษ
+function showPaper(){
+  basket.classList.add("shake");
+  setTimeout(()=>basket.classList.remove("shake"),600);
+
+  const paper=document.createElement("div");
+  paper.className="paper";
+  paper.innerText="คลิกเพื่อขูด";
+  paper.onclick=startScratch;
+  papers.innerHTML="";
+  papers.appendChild(paper);
 }
 
+// detect mouse shake
+let lastX=0,lastY=0;
+document.addEventListener("mousemove",e=>{
+  let dx=Math.abs(e.movementX), dy=Math.abs(e.movementY);
+  if(dx>30||dy>30) showPaper();
+});
+
+// detect phone shake
+window.addEventListener("devicemotion", e=>{
+  const acc=e.accelerationIncludingGravity;
+  if(acc && (Math.abs(acc.x)+Math.abs(acc.y)+Math.abs(acc.z) > 30)){
+    showPaper();
+  }
+});
+
+// start scratch
 function startScratch(){
-  const msg = MESSAGES[Math.floor(Math.random()*MESSAGES.length)];
-  document.getElementById("hidden-message").innerText = msg;
-  document.getElementById("scratch-container").style.display="block";
-  initScratch();
-}
-
-function initScratch(){
-  const canvas = document.getElementById("scratchCanvas");
-  const ctx = canvas.getContext("2d");
-
-  // ระบายสีเทา
-  ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = "#c0c0c0";
+  papers.innerHTML="";
+  container.style.display="block";
+  ctx.fillStyle="#ccc";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  let isDrawing=false;
-
-  function getPos(e){
-    const rect=canvas.getBoundingClientRect();
-    const clientX = e.touches? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches? e.touches[0].clientY : e.clientY;
-    return {x: clientX-rect.left, y: clientY-rect.top};
-  }
+  let drawing=false;
+  canvas.addEventListener("mousedown",()=>drawing=true);
+  canvas.addEventListener("mouseup",()=>drawing=false);
+  canvas.addEventListener("mousemove",scratch);
+  canvas.addEventListener("touchstart",()=>drawing=true);
+  canvas.addEventListener("touchend",()=>drawing=false);
+  canvas.addEventListener("touchmove",scratch);
 
   function scratch(e){
-    if(!isDrawing) return;
-    const pos=getPos(e);
+    if(!drawing) return;
+    const rect=canvas.getBoundingClientRect();
+    const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+    const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
     ctx.globalCompositeOperation="destination-out";
     ctx.beginPath();
-    ctx.arc(pos.x,pos.y,20,0,Math.PI*2);
+    ctx.arc(x,y,20,0,Math.PI*2);
     ctx.fill();
     checkReveal();
   }
 
-  canvas.onmousedown=(e)=>{isDrawing=true; scratch(e);};
-  canvas.onmousemove=scratch;
-  canvas.onmouseup=()=>{isDrawing=false;};
-  canvas.onmouseleave=()=>{isDrawing=false;};
-
-  canvas.ontouchstart=(e)=>{isDrawing=true; scratch(e);};
-  canvas.ontouchmove=(e)=>{scratch(e); e.preventDefault();};
-  canvas.ontouchend=()=>{isDrawing=false;};
-
   function checkReveal(){
-    const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
-    let total = imgData.data.length/4;
-    let cleared = 0;
+    const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+    let total=imgData.data.length/4, cleared=0;
     for(let i=0;i<imgData.data.length;i+=4){
       if(imgData.data[i+3]===0) cleared++;
     }
-    if(cleared/total > REVEAL_THRESHOLD){
+    if(cleared/total > 0.6){
       canvas.style.display="none";
-      launchConfetti();
+      downloadBtn.style.display="inline-block";
     }
   }
 }
 
-// 🎉 ฟังก์ชันคอนเฟตตี้
-function launchConfetti(){
-  const duration = 2 * 1000;
-  const end = Date.now() + duration;
-
-  (function frame() {
-    confetti({
-      particleCount: 5,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0 }
-    });
-    confetti({
-      particleCount: 5,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 }
-    });
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
-    }
-  }());
-}
-
-// โหลดไลบรารีคอนเฟตตี้
-var script = document.createElement("script");
-script.src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
-document.body.appendChild(script);
+// ดาวน์โหลดภาพเต็ม
+downloadBtn.onclick=function(){
+  const link=document.createElement("a");
+  link.download="photo.jpg";
+  link.href=document.getElementById("main-img").src;
+  link.click();
+};
 </script>
 </body>
 </html>
